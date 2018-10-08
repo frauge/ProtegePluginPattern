@@ -9,7 +9,7 @@ public class ExampleWorkspaceTab extends OWLWorkspaceViewsTab {
 	private static final Logger log = LoggerFactory.getLogger(ExampleWorkspaceTab.class);
 
 	public ExampleWorkspaceTab() {
-		setToolTipText("Custom tooltip text for Example Tab (2)");
+		setToolTipText("Custom tooltip text for Example Tab");
 	}
 
     @Override

@@ -15,11 +15,17 @@
 	<!-- View -->
 
 	<extension id="ExampleViewComponent" point="org.protege.editor.core.application.ViewComponent">
-		<label value="Example view component" />
+		<label value="Pattern Extraction" />
 		<class value="edu.stanford.bmir.protege.examples.view.ExampleViewComponent" />
 		<headerColor value="@org.protege.ontologycolor"/>
 		<category value="@org.protege.ontologycategory" />
 	</extension>
 	
-    
+	<extension id="CoverageViewComponent" point="org.protege.editor.core.application.ViewComponent">
+		<label value="Pattern Coverage" />
+		<class value="edu.stanford.bmir.protege.examples.view.CoverageViewComponent" />
+		<headerColor value="@org.protege.ontologycolor"/>
+		<category value="@org.protege.ontologycategory" />
+	</extension>
+
 </plugin>

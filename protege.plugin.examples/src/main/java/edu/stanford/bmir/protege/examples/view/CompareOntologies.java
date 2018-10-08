@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import javax.swing.BoxLayout;
@@ -25,6 +26,7 @@ import org.protege.editor.owl.model.event.EventType;
 import org.protege.editor.owl.model.event.OWLModelManagerListener;
 import org.protege.editor.owl.ui.metrics.DLNamePanel;
 import org.semanticweb.owlapi.model.AxiomType;
+import org.semanticweb.owlapi.model.ClassExpressionType;
 import org.semanticweb.owlapi.model.OWLAnnotationAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLAnnotationProperty;
 import org.semanticweb.owlapi.model.OWLAnnotationPropertyDomainAxiom;
@@ -112,9 +114,9 @@ import org.slf4j.LoggerFactory;
 import edu.stanford.bmir.protege.examples.*;
 import edu.stanford.bmir.protege.examples.tab.ExampleWorkspaceTab;
 
-public class Metrics extends JPanel {
+public class CompareOntologies extends JPanel {
 	
-	private static final Logger log = LoggerFactory.getLogger(Metrics.class);
+	private static final Logger log = LoggerFactory.getLogger(CompareOntologies.class);
 
     private JButton refreshButton = new JButton("Refresh");
 
@@ -124,7 +126,7 @@ public class Metrics extends JPanel {
     private ActionListener refreshAction = e -> recalculate();
     private OWLModelManagerListener modelListener = event -> {
         if (event.getType() == EventType.ACTIVE_ONTOLOGY_CHANGED) {
-            recalculate();
+            firstcalculate();
         }
     };
     
@@ -133,6 +135,8 @@ public class Metrics extends JPanel {
     protected DataVisitor dvisitor = new DataVisitor();
     protected IndividualVisitor ivisitor = new IndividualVisitor();
     protected RoleVisitor pvisitor = new RoleVisitor();
+    
+    HashMap<String, HashSet> initial_axiomtype_pattern = new HashMap<String, HashSet>();
     
     //Klassenunterscheidung
     HashMap<String, Integer> class_distinc = new HashMap<String, Integer>();
@@ -148,9 +152,9 @@ public class Metrics extends JPanel {
     
     private OWLOntologyChangeListener changeListener;
     
-    public Metrics(OWLModelManager modelManager) {
+    public CompareOntologies(OWLModelManager modelManager) {
     	
-    	log.info("Metrics initialzed");
+    	log.info("Compare View initialzed");
     	
     	this.modelManager = modelManager;
     	    
@@ -160,7 +164,7 @@ public class Metrics extends JPanel {
     	    };
     	        	
     	panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-    	recalculate(); 
+    	firstcalculate(); 
         JScrollPane rollPane = new JScrollPane(panel);
         rollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         rollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
@@ -183,14 +187,36 @@ public class Metrics extends JPanel {
         log.info("Metrics disposed");
     }
     
+    
+    private void firstcalculate() {
+    	panel.removeAll();
+    	log.info("First coverage");
+        for (OWLAxiom ax : modelManager.getActiveOntology().getAxioms()) {
+        	String axiom = ax.accept(avisitor);
+        	String ax_name = ax.getAxiomType().getName();
+        	if (axiom != "") {
+	        	if(initial_axiomtype_pattern.containsKey(ax_name)) {
+	        		HashSet pattern = initial_axiomtype_pattern.get(ax_name);
+	        		pattern.add(axiom);
+	        		initial_axiomtype_pattern.replace(ax_name, pattern);
+	        	}else {
+	        		HashSet pattern = new HashSet();
+	        		pattern.add(axiom);
+	        		initial_axiomtype_pattern.put(ax_name, pattern);
+	        	}
+        	}
+        } 
+        addaxiomtopanel("Pattern base loaded.",true);
+    }
+    
     private void recalculate() {
-    	log.info("Recalculate");
+    	
+    	log.info("Check Coverage");
+    	
     	panel.removeAll();
     	//HashSet for avoiding duplicates
     	HashMap<String, HashSet> axiomtype_pattern = new HashMap<String, HashSet>();
-        HashMap<String, Integer> axiomtype_count = new HashMap<String, Integer>();
 
-    	addaxiomtopanel("Total Axioms: " + modelManager.getActiveOntology().getAxiomCount(),true);
         for (OWLAxiom ax : modelManager.getActiveOntology().getAxioms()) {
         	String axiom = ax.accept(avisitor);
         	String ax_name = ax.getAxiomType().getName();
@@ -199,26 +225,68 @@ public class Metrics extends JPanel {
 	        		HashSet pattern = axiomtype_pattern.get(ax_name);
 	        		pattern.add(axiom);
 	        		axiomtype_pattern.replace(ax_name, pattern);
-	        		axiomtype_count.replace(ax_name, axiomtype_count.get(ax_name).intValue() + 1);
 	        	}else {
 	        		HashSet pattern = new HashSet();
 	        		pattern.add(axiom);
 	        		axiomtype_pattern.put(ax_name, pattern);
-	        		axiomtype_count.put(ax_name, 1);
 	        	}
         	}
         }
         
-        MapComparator comp = new MapComparator(axiomtype_count);
-        TreeMap<String,Integer> treeMap = new TreeMap<String,Integer>(comp);
-        treeMap.putAll(axiomtype_count);
+        HashMap<String, HashSet> base_pattern = initial_axiomtype_pattern;
+		HashMap<String, HashSet> check_pattern = axiomtype_pattern;
+		
+		boolean total_coverage = true;
+		boolean first_entry = true;
+		boolean first_axiom_entry = true;
+		Set set = check_pattern.entrySet();
+        Iterator i_axiomname = set.iterator();
         
-        for(Map.Entry<String,Integer> entry : treeMap.entrySet()) {
-        		addaxiomtopanel("Number of " + entry.getKey() + " Axioms: " + entry.getValue(),true);
-	           Iterator<String> i = axiomtype_pattern.get(entry.getKey()).iterator();
-	           while (i.hasNext())
-	        	   addaxiomtopanel(i.next(),false); 
-        }           
+       while(i_axiomname.hasNext()) {
+        	
+        	Map.Entry mentry = (Map.Entry)i_axiomname.next();        	
+        	Iterator<String> i_entries = ((HashSet) mentry.getValue()).iterator();	
+        	
+        	while (i_entries.hasNext()) {
+        		//Axiomtyp in Basis?
+        		String current_entry = i_entries.next();
+        		 if(base_pattern.containsKey(mentry.getKey())) {
+        			 //Entry not in Basis?
+	        		 if (!base_pattern.get(mentry.getKey()).contains(current_entry)) {
+	        			 if (first_entry) {
+	        				 first_entry = false;
+	        				 total_coverage = false;
+	        				 addaxiomtopanel("Following patterns are not covered:",true);
+	        			 }
+	        			 if(first_axiom_entry) {
+	        				 addaxiomtopanel("Axiomtype " + mentry.getKey() +":", true);
+	        				 first_axiom_entry = false;
+	        			 }
+	        			 addaxiomtopanel(current_entry,false);
+	        		 }
+        		 
+        		 }else{
+        			 if (first_entry) {
+        				 first_entry = false;
+        				 total_coverage = false;
+        				 addaxiomtopanel("Following patterns are not covered:",true);
+        			 }
+        			 if(first_axiom_entry) {
+        				 addaxiomtopanel("Axiomtype " + mentry.getKey() +":" ,true);
+        				 first_axiom_entry = false;
+        			 }
+        			 addaxiomtopanel(current_entry,false);
+        		 }
+        		 		 
+        	 }
+        	
+        	 first_axiom_entry = true;
+        }
+        
+        if(total_coverage) {
+        	addaxiomtopanel("All patterns are covered.",true);
+        }
+                  
     }
     
     private void addaxiomtopanel(String ax, boolean bold) {
@@ -391,13 +459,23 @@ public class Metrics extends JPanel {
 			// TODO Auto-generated method stub
 			String result = "";
 	          boolean first = true;
+	          boolean onlyclass = true;
+	          int numberOperands = 0;
 	          for (OWLClassExpression conjunct : ce.getOperands()) {
 	                if (first) {
 	                    result = conjunct.accept(this);
 	                    first = false;
 	                } else 
 	                    result = result + " ⊓ " + conjunct.accept(this);
+	                
+	                if(conjunct.getClassExpressionType() != ClassExpressionType.OWL_CLASS) {
+	                	onlyclass = false;
+	                }
+	                numberOperands++;
 	            }
+	          if(onlyclass && numberOperands > 3) {
+	        	   return "class ⊓ ... ⊓ class)";
+	           }
 	           return "(" + result + ")";
 		}
 
@@ -406,13 +484,23 @@ public class Metrics extends JPanel {
 			// TODO Auto-generated method stub
 			String result = "";
 	          boolean first = true;
+	          boolean onlyclass = true;
+	          int numberOperands = 0;
 	          for (OWLClassExpression conjunct : ce.getOperands()) {
 	                if (first) {
 	                    result = conjunct.accept(this);
 	                    first = false;
-	                } else 
+	                } else {
 	                    result = result + " ⊔ " + conjunct.accept(this);
+	                }
+	                if(conjunct.getClassExpressionType() != ClassExpressionType.OWL_CLASS) {
+	                	onlyclass = false;
+	                }
+	                numberOperands++;
 	            }
+	           if(onlyclass && numberOperands > 3) {
+	        	   return "class ⊔ ... ⊔ class)";
+	           }
 	           return "(" + result + ")";
 		}
 
