@@ -473,8 +473,8 @@ public class CompareOntologies extends JPanel {
 	                }
 	                numberOperands++;
 	            }
-	          if(onlyclass && numberOperands > 3) {
-	        	   return "class ⊓ ... ⊓ class)";
+	          if(onlyclass && numberOperands > 2) {
+	        	   return "(class ⊓ ... ⊓ class)";
 	           }
 	           return "(" + result + ")";
 		}
@@ -498,9 +498,10 @@ public class CompareOntologies extends JPanel {
 	                }
 	                numberOperands++;
 	            }
-	           if(onlyclass && numberOperands > 3) {
-	        	   return "class ⊔ ... ⊔ class)";
-	           }
+
+	          if(onlyclass && numberOperands > 2) {
+	        	   return "(class ⊔ ... ⊔ class)";
+	          }
 	           return "(" + result + ")";
 		}
 

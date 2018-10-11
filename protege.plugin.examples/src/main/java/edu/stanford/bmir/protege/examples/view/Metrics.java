@@ -25,6 +25,7 @@ import org.protege.editor.owl.model.event.EventType;
 import org.protege.editor.owl.model.event.OWLModelManagerListener;
 import org.protege.editor.owl.ui.metrics.DLNamePanel;
 import org.semanticweb.owlapi.model.AxiomType;
+import org.semanticweb.owlapi.model.ClassExpressionType;
 import org.semanticweb.owlapi.model.OWLAnnotationAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLAnnotationProperty;
 import org.semanticweb.owlapi.model.OWLAnnotationPropertyDomainAxiom;
@@ -189,12 +190,14 @@ public class Metrics extends JPanel {
     	//HashSet for avoiding duplicates
     	HashMap<String, HashSet> axiomtype_pattern = new HashMap<String, HashSet>();
         HashMap<String, Integer> axiomtype_count = new HashMap<String, Integer>();
-
+        int numberAxiomsChecked = 0;
+        
     	addaxiomtopanel("Total Axioms: " + modelManager.getActiveOntology().getAxiomCount(),true);
         for (OWLAxiom ax : modelManager.getActiveOntology().getAxioms()) {
         	String axiom = ax.accept(avisitor);
         	String ax_name = ax.getAxiomType().getName();
         	if (axiom != "") {
+        		numberAxiomsChecked ++;
 	        	if(axiomtype_pattern.containsKey(ax_name)) {
 	        		HashSet pattern = axiomtype_pattern.get(ax_name);
 	        		pattern.add(axiom);
@@ -208,6 +211,8 @@ public class Metrics extends JPanel {
 	        	}
         	}
         }
+        
+        addaxiomtopanel("Number of Axioms checked: " + numberAxiomsChecked , true);
         
         MapComparator comp = new MapComparator(axiomtype_count);
         TreeMap<String,Integer> treeMap = new TreeMap<String,Integer>(comp);
@@ -391,13 +396,23 @@ public class Metrics extends JPanel {
 			// TODO Auto-generated method stub
 			String result = "";
 	          boolean first = true;
+	          boolean onlyclass = true;
+	          int numberOperands = 0;
 	          for (OWLClassExpression conjunct : ce.getOperands()) {
 	                if (first) {
 	                    result = conjunct.accept(this);
 	                    first = false;
 	                } else 
 	                    result = result + " ⊓ " + conjunct.accept(this);
+	                
+	                if(conjunct.getClassExpressionType() != ClassExpressionType.OWL_CLASS) {
+	                	onlyclass = false;
+	                }
+	                numberOperands++;
 	            }
+	          if(onlyclass && numberOperands > 2) {
+	        	   return "(class ⊓ ... ⊓ class)";
+	           }
 	           return "(" + result + ")";
 		}
 
@@ -406,13 +421,24 @@ public class Metrics extends JPanel {
 			// TODO Auto-generated method stub
 			String result = "";
 	          boolean first = true;
+	          boolean onlyclass = true;
+	          int numberOperands = 0;
 	          for (OWLClassExpression conjunct : ce.getOperands()) {
 	                if (first) {
 	                    result = conjunct.accept(this);
 	                    first = false;
-	                } else 
+	                } else {
 	                    result = result + " ⊔ " + conjunct.accept(this);
+	                }
+	                if(conjunct.getClassExpressionType() != ClassExpressionType.OWL_CLASS) {
+	                	onlyclass = false;
+	                }
+	                numberOperands++;
 	            }
+
+	          if(onlyclass && numberOperands > 2) {
+	        	   return "(class ⊔ ... ⊔ class)";
+	          }
 	           return "(" + result + ")";
 		}
 
