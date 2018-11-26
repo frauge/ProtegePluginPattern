@@ -111,55 +111,56 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import edu.stanford.bmir.protege.examples.*;
-import edu.stanford.bmir.protege.examples.tab.ExampleWorkspaceTab;
+import edu.stanford.bmir.protege.examples.tab.PatternTab;
 
-public class Metrics extends JPanel {
+public class ExtractOntology extends JPanel {
 	
-	private static final Logger log = LoggerFactory.getLogger(Metrics.class);
-
-    private JButton refreshButton = new JButton("Refresh");
+	private static final Logger log = LoggerFactory.getLogger(ExtractOntology.class);
 
     private JPanel panel = new JPanel();
     private OWLModelManager modelManager;
 
+    //Update when change occurs
     private ActionListener refreshAction = e -> recalculate();
+    
     private OWLModelManagerListener modelListener = event -> {
         if (event.getType() == EventType.ACTIVE_ONTOLOGY_CHANGED) {
             recalculate();
         }
     };
     
+    private OWLOntologyChangeListener changeListener = change -> {
+    	log.info(change.toString());
+    	recalculate();
+    };
+    
+    //Visitors for logic
 	protected AxiomVisitor avisitor = new AxiomVisitor();  
     protected ClassVisitor cvisitor = new ClassVisitor();
     protected DataVisitor dvisitor = new DataVisitor();
     protected IndividualVisitor ivisitor = new IndividualVisitor();
     protected RoleVisitor pvisitor = new RoleVisitor();
     
-    //Klassenunterscheidung
+  //Class, Individuals and Property Identifier
     HashMap<String, Integer> class_distinc = new HashMap<String, Integer>();
     int it_class = 1;
-    //Individuenunterscheidung
     HashMap<String, Integer> indiv_distinc = new HashMap<String, Integer>();
     int it_indiv = 1;
-    //Propertyunterscheidung
     HashMap<String, Integer> prop_distinc = new HashMap<String, Integer>();
     int it_prop = 1;
-    //wenn etwas nicht implementiertes vorkommt wird es nicht hinzugefügt
+    
+    //Is constructor implemented in this tool?
     boolean add_axiom = true;
     
-    private OWLOntologyChangeListener changeListener;
     
-    public Metrics(OWLModelManager modelManager) {
+    
+    public ExtractOntology(OWLModelManager modelManager) {
     	
-    	log.info("Metrics initialzed");
+    	log.info("Extractor initialzed");
     	
     	this.modelManager = modelManager;
     	    
-    	changeListener = change -> {
-    	    	log.info(change.toString());
-    	    	recalculate();
-    	    };
-    	        	
+    	//Set UI 	        	
     	panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
     	recalculate(); 
         JScrollPane rollPane = new JScrollPane(panel);
@@ -171,28 +172,26 @@ public class Metrics extends JPanel {
         contentPane.add(rollPane);   
         modelManager.addOntologyChangeListener(changeListener);
         modelManager.addListener(modelListener);
-        refreshButton.addActionListener(refreshAction);
         
     	add(contentPane);
-    	add(refreshButton);
     }
     
     public void dispose() {
         modelManager.removeOntologyChangeListener(changeListener);
         modelManager.removeListener(modelListener);
-        refreshButton.removeActionListener(refreshAction);
-        log.info("Metrics disposed");
+        log.info("Extractor disposed");
     }
     
     private void recalculate() {
     	log.info("Recalculate");
+    	
     	panel.removeAll();
+    	
     	//HashSet for avoiding duplicates
     	HashMap<String, HashSet> axiomtype_pattern = new HashMap<String, HashSet>();
         HashMap<String, Integer> axiomtype_count = new HashMap<String, Integer>();
         int numberAxiomsChecked = 0;
         
-    	addaxiomtopanel("Total Axioms: " + modelManager.getActiveOntology().getAxiomCount(),true);
         for (OWLAxiom ax : modelManager.getActiveOntology().getAxioms()) {
         	String axiom = ax.accept(avisitor);
         	String ax_name = ax.getAxiomType().getName();
@@ -213,7 +212,6 @@ public class Metrics extends JPanel {
         }
         
         addaxiomtopanel("Number of Axioms checked: " + numberAxiomsChecked , true);
-        
         MapComparator comp = new MapComparator(axiomtype_count);
         TreeMap<String,Integer> treeMap = new TreeMap<String,Integer>(comp);
         treeMap.putAll(axiomtype_count);
@@ -381,10 +379,10 @@ public class Metrics extends JPanel {
 			if(ce.isOWLThing()) return "⊤";
 			if(ce.isOWLNothing()) return "⊥";
 			int ident;
-			if (class_distinc.containsKey(ce.getIRI().getFragment())) {
-				ident = (int) class_distinc.get(ce.getIRI().getFragment());
+			if (class_distinc.containsKey(ce.getIRI().toString())) {
+				ident = (int) class_distinc.get(ce.getIRI().toString());
 			}else {
-				class_distinc.put(ce.getIRI().getFragment(), it_class);
+				class_distinc.put(ce.getIRI().toString(), it_class);
 				ident = it_class;
 				it_class ++;
 			}
@@ -459,7 +457,7 @@ public class Metrics extends JPanel {
 
 		@Override
 		public String visit(OWLObjectHasValue ce) {
-			return "∃" + ce.getProperty().accept(pvisitor) + ".{" + ce.getValue().accept(ivisitor) +"}";
+			return "∃" + ce.getProperty().accept(pvisitor) + ".{" + ce.getFiller().accept(ivisitor) +"}";
 		}
 
 		@Override
@@ -508,7 +506,7 @@ public class Metrics extends JPanel {
 
 		@Override
 		public String visit(OWLDataHasValue ce) {
-			return "∃" + ce.getProperty().accept(pvisitor) + ".{" + ce.getValue().accept(dvisitor) + "}"; 
+			return "∃" + ce.getProperty().accept(pvisitor) + ".{" + ce.getFiller().accept(dvisitor) + "}"; 
 		}
 
 		@Override
@@ -534,10 +532,10 @@ public class Metrics extends JPanel {
     	public String visit(OWLObjectProperty arg0) {
     		// TODO Auto-generated method stub
     		int ident;
-    		if (prop_distinc.containsKey(arg0.getIRI().getFragment())) {
-    			ident = (int) prop_distinc.get(arg0.getIRI().getFragment());
+    		if (prop_distinc.containsKey(arg0.getIRI().toString())) {
+    			ident = (int) prop_distinc.get(arg0.getIRI().toString());
     		}else {
-    			prop_distinc.put(arg0.getIRI().getFragment(), it_prop);
+    			prop_distinc.put(arg0.getIRI().toString(), it_prop);
     			ident = it_prop;
     			it_prop ++;
     		}
@@ -553,10 +551,10 @@ public class Metrics extends JPanel {
     	public String visit(OWLDataProperty arg0) {
     		// TODO Auto-generated method stub
     		int ident;
-    		if (prop_distinc.containsKey(arg0.getIRI().getFragment())) {
-    			ident = (int) prop_distinc.get(arg0.getIRI().getFragment());
+    		if (prop_distinc.containsKey(arg0.getIRI().toString())) {
+    			ident = (int) prop_distinc.get(arg0.getIRI().toString());
     		}else {
-    			prop_distinc.put(arg0.getIRI().getFragment(), it_prop);
+    			prop_distinc.put(arg0.getIRI().toString(), it_prop);
     			ident = it_prop;
     			it_prop ++;
     		}
@@ -566,10 +564,10 @@ public class Metrics extends JPanel {
 		@Override
 		public String visit(OWLAnnotationProperty arg0) {
 			int ident;
-    		if (prop_distinc.containsKey(arg0.getIRI().getFragment())) {
-    			ident = (int) prop_distinc.get(arg0.getIRI().getFragment());
+    		if (prop_distinc.containsKey(arg0.getIRI().toString())) {
+    			ident = (int) prop_distinc.get(arg0.getIRI().toString());
     		}else {
-    			prop_distinc.put(arg0.getIRI().getFragment(), it_prop);
+    			prop_distinc.put(arg0.getIRI().toString(), it_prop);
     			ident = it_prop;
     			it_prop ++;
     		}
@@ -641,10 +639,10 @@ public class Metrics extends JPanel {
 		public String visit(OWLNamedIndividual arg0) {
 			// TODO Auto-generated method stub
 			int ident;
-			if (indiv_distinc.containsKey(arg0.getIRI().getFragment())) {
-				ident = (int) class_distinc.get(arg0.getIRI().getFragment());
+			if (indiv_distinc.containsKey(arg0.getIRI().toString())) {
+				ident = (int) indiv_distinc.get(arg0.getIRI().toString());
 			}else {
-				class_distinc.put(arg0.getIRI().getFragment(), it_indiv);
+				indiv_distinc.put(arg0.getIRI().toString(), it_indiv);
 				ident = it_indiv;
 				it_indiv ++;
 			}

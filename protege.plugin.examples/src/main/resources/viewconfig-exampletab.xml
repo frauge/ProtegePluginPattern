@@ -8,7 +8,7 @@
         </CNode>
         <CNode>
             <Component label="Pattern Extraction">
-                <Property id="pluginId" value="protege.plugin.examples.ExampleViewComponent"/>
+                <Property id="pluginId" value="protege.plugin.examples.ExtractionViewComponent"/>
             </Component>
         </CNode>
     </VSNode>

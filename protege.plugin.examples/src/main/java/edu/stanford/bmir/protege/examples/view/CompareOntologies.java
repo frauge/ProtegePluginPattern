@@ -112,13 +112,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import edu.stanford.bmir.protege.examples.*;
-import edu.stanford.bmir.protege.examples.tab.ExampleWorkspaceTab;
+import edu.stanford.bmir.protege.examples.tab.PatternTab;
 
 public class CompareOntologies extends JPanel {
 	
 	private static final Logger log = LoggerFactory.getLogger(CompareOntologies.class);
-
-    private JButton refreshButton = new JButton("Refresh");
 
     private JPanel panel = new JPanel();
     private OWLModelManager modelManager;
@@ -138,17 +136,17 @@ public class CompareOntologies extends JPanel {
     
     HashMap<String, HashSet> initial_axiomtype_pattern = new HashMap<String, HashSet>();
     
-    //Klassenunterscheidung
+    //Class, Individuals and Property Identifier
     HashMap<String, Integer> class_distinc = new HashMap<String, Integer>();
     int it_class = 1;
-    //Individuenunterscheidung
     HashMap<String, Integer> indiv_distinc = new HashMap<String, Integer>();
     int it_indiv = 1;
-    //Propertyunterscheidung
     HashMap<String, Integer> prop_distinc = new HashMap<String, Integer>();
     int it_prop = 1;
-    //wenn etwas nicht implementiertes vorkommt wird es nicht hinzugefügt
+    
+    //Is constructor implemented in this tool?
     boolean add_axiom = true;
+    
     
     private OWLOntologyChangeListener changeListener;
     
@@ -174,17 +172,14 @@ public class CompareOntologies extends JPanel {
         contentPane.add(rollPane);   
         modelManager.addOntologyChangeListener(changeListener);
         modelManager.addListener(modelListener);
-        refreshButton.addActionListener(refreshAction);
         
     	add(contentPane);
-    	add(refreshButton);
     }
     
     public void dispose() {
         modelManager.removeOntologyChangeListener(changeListener);
         modelManager.removeListener(modelListener);
-        refreshButton.removeActionListener(refreshAction);
-        log.info("Metrics disposed");
+        log.info("Compare disposed");
     }
     
     
@@ -444,10 +439,10 @@ public class CompareOntologies extends JPanel {
 			if(ce.isOWLThing()) return "⊤";
 			if(ce.isOWLNothing()) return "⊥";
 			int ident;
-			if (class_distinc.containsKey(ce.getIRI().getFragment())) {
-				ident = (int) class_distinc.get(ce.getIRI().getFragment());
+			if (class_distinc.containsKey(ce.getIRI().toString())) {
+				ident = (int) class_distinc.get(ce.getIRI().toString());
 			}else {
-				class_distinc.put(ce.getIRI().getFragment(), it_class);
+				class_distinc.put(ce.getIRI().toString(), it_class);
 				ident = it_class;
 				it_class ++;
 			}
@@ -597,10 +592,10 @@ public class CompareOntologies extends JPanel {
     	public String visit(OWLObjectProperty arg0) {
     		// TODO Auto-generated method stub
     		int ident;
-    		if (prop_distinc.containsKey(arg0.getIRI().getFragment())) {
-    			ident = (int) prop_distinc.get(arg0.getIRI().getFragment());
+    		if (prop_distinc.containsKey(arg0.getIRI().toString())) {
+    			ident = (int) prop_distinc.get(arg0.getIRI().toString());
     		}else {
-    			prop_distinc.put(arg0.getIRI().getFragment(), it_prop);
+    			prop_distinc.put(arg0.getIRI().toString(), it_prop);
     			ident = it_prop;
     			it_prop ++;
     		}
@@ -616,10 +611,10 @@ public class CompareOntologies extends JPanel {
     	public String visit(OWLDataProperty arg0) {
     		// TODO Auto-generated method stub
     		int ident;
-    		if (prop_distinc.containsKey(arg0.getIRI().getFragment())) {
-    			ident = (int) prop_distinc.get(arg0.getIRI().getFragment());
+    		if (prop_distinc.containsKey(arg0.getIRI().toString())) {
+    			ident = (int) prop_distinc.get(arg0.getIRI().toString());
     		}else {
-    			prop_distinc.put(arg0.getIRI().getFragment(), it_prop);
+    			prop_distinc.put(arg0.getIRI().toString(), it_prop);
     			ident = it_prop;
     			it_prop ++;
     		}
@@ -629,10 +624,10 @@ public class CompareOntologies extends JPanel {
 		@Override
 		public String visit(OWLAnnotationProperty arg0) {
 			int ident;
-    		if (prop_distinc.containsKey(arg0.getIRI().getFragment())) {
-    			ident = (int) prop_distinc.get(arg0.getIRI().getFragment());
+    		if (prop_distinc.containsKey(arg0.getIRI().toString())) {
+    			ident = (int) prop_distinc.get(arg0.getIRI().toString());
     		}else {
-    			prop_distinc.put(arg0.getIRI().getFragment(), it_prop);
+    			prop_distinc.put(arg0.getIRI().toString(), it_prop);
     			ident = it_prop;
     			it_prop ++;
     		}
@@ -704,10 +699,10 @@ public class CompareOntologies extends JPanel {
 		public String visit(OWLNamedIndividual arg0) {
 			// TODO Auto-generated method stub
 			int ident;
-			if (indiv_distinc.containsKey(arg0.getIRI().getFragment())) {
-				ident = (int) class_distinc.get(arg0.getIRI().getFragment());
+			if (indiv_distinc.containsKey(arg0.getIRI().toString())) {
+				ident = (int) indiv_distinc.get(arg0.getIRI().toString());
 			}else {
-				class_distinc.put(arg0.getIRI().getFragment(), it_indiv);
+				indiv_distinc.put(arg0.getIRI().toString(), it_indiv);
 				ident = it_indiv;
 				it_indiv ++;
 			}
