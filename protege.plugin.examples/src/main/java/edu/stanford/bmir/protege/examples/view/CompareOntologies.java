@@ -1,22 +1,16 @@
 package edu.stanford.bmir.protege.examples.view;
 
-import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.ComponentOrientation;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.event.ActionListener;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 
 import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -24,8 +18,7 @@ import javax.swing.JScrollPane;
 import org.protege.editor.owl.model.OWLModelManager;
 import org.protege.editor.owl.model.event.EventType;
 import org.protege.editor.owl.model.event.OWLModelManagerListener;
-import org.protege.editor.owl.ui.metrics.DLNamePanel;
-import org.semanticweb.owlapi.model.AxiomType;
+
 import org.semanticweb.owlapi.model.ClassExpressionType;
 import org.semanticweb.owlapi.model.OWLAnnotationAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLAnnotationProperty;
@@ -111,9 +104,6 @@ import org.semanticweb.owlapi.model.SWRLRule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import edu.stanford.bmir.protege.examples.*;
-import edu.stanford.bmir.protege.examples.tab.PatternTab;
-
 public class CompareOntologies extends JPanel {
 	
 	private static final Logger log = LoggerFactory.getLogger(CompareOntologies.class);
@@ -121,7 +111,6 @@ public class CompareOntologies extends JPanel {
     private JPanel panel = new JPanel();
     private OWLModelManager modelManager;
 
-    private ActionListener refreshAction = e -> recalculate();
     private OWLModelManagerListener modelListener = event -> {
         if (event.getType() == EventType.ACTIVE_ONTOLOGY_CHANGED) {
             firstcalculate();
@@ -604,7 +593,7 @@ public class CompareOntologies extends JPanel {
 
     	@Override
     	public String visit(OWLObjectInverseOf arg0) {
-    		return "property" + "-";	
+    		return arg0.accept(this) + "-";	
     	}
 
     	@Override

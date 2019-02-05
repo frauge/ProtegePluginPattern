@@ -1,12 +1,8 @@
 package edu.stanford.bmir.protege.examples.view;
 
-import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.ComponentOrientation;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -14,8 +10,6 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -23,8 +17,7 @@ import javax.swing.JScrollPane;
 import org.protege.editor.owl.model.OWLModelManager;
 import org.protege.editor.owl.model.event.EventType;
 import org.protege.editor.owl.model.event.OWLModelManagerListener;
-import org.protege.editor.owl.ui.metrics.DLNamePanel;
-import org.semanticweb.owlapi.model.AxiomType;
+
 import org.semanticweb.owlapi.model.ClassExpressionType;
 import org.semanticweb.owlapi.model.OWLAnnotationAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLAnnotationProperty;
@@ -110,8 +103,6 @@ import org.semanticweb.owlapi.model.SWRLRule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import edu.stanford.bmir.protege.examples.*;
-import edu.stanford.bmir.protege.examples.tab.PatternTab;
 
 public class ExtractOntology extends JPanel {
 	
@@ -121,8 +112,7 @@ public class ExtractOntology extends JPanel {
     private OWLModelManager modelManager;
 
     //Update when change occurs
-    private ActionListener refreshAction = e -> recalculate();
-    
+  
     private OWLModelManagerListener modelListener = event -> {
         if (event.getType() == EventType.ACTIVE_ONTOLOGY_CHANGED) {
             recalculate();
@@ -141,7 +131,7 @@ public class ExtractOntology extends JPanel {
     protected IndividualVisitor ivisitor = new IndividualVisitor();
     protected RoleVisitor pvisitor = new RoleVisitor();
     
-  //Class, Individuals and Property Identifier
+   //Class, Individuals and Property Identifier
     HashMap<String, Integer> class_distinc = new HashMap<String, Integer>();
     int it_class = 1;
     HashMap<String, Integer> indiv_distinc = new HashMap<String, Integer>();
@@ -202,7 +192,7 @@ public class ExtractOntology extends JPanel {
 	        		pattern.add(axiom);
 	        		axiomtype_pattern.replace(ax_name, pattern);
 	        		axiomtype_count.replace(ax_name, axiomtype_count.get(ax_name).intValue() + 1);
-	        	}else {
+	        	}else{
 	        		HashSet pattern = new HashSet();
 	        		pattern.add(axiom);
 	        		axiomtype_pattern.put(ax_name, pattern);
@@ -238,7 +228,7 @@ public class ExtractOntology extends JPanel {
     	panel.add(textComponent);
     }
     
-    private String convert_sub(OWLSubClassOfAxiom o) {
+   private String convert_sub(OWLSubClassOfAxiom o) {
     	String result = o.getSubClass().accept(cvisitor) + " ⊑ " + o.getSuperClass().accept(cvisitor);
     	return checkaxiom(result);  	
    }
@@ -544,7 +534,7 @@ public class ExtractOntology extends JPanel {
 
     	@Override
     	public String visit(OWLObjectInverseOf arg0) {
-    		return "property" + "-";	
+    		return arg0.accept(this) + "-";	
     	}
 
     	@Override
@@ -659,8 +649,7 @@ public class ExtractOntology extends JPanel {
     }
     
     private class AxiomVisitor implements OWLAxiomVisitorEx<String>{
-		 
-
+    	
 		@Override
 		public String visit(OWLEquivalentClassesAxiom arg0) {
 			return convert_equ(arg0);

@@ -14,7 +14,7 @@
 
 	<!-- View -->
 
-	<extension id="ExampleViewComponent" point="org.protege.editor.core.application.ViewComponent">
+	<extension id="ExtractionViewComponent" point="org.protege.editor.core.application.ViewComponent">
 		<label value="Pattern Extraction" />
 		<class value="edu.stanford.bmir.protege.examples.view.ExtractionViewComponent" />
 		<headerColor value="@org.protege.ontologycolor"/>
