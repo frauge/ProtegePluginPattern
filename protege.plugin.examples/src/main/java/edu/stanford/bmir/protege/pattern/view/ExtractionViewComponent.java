@@ -1,4 +1,4 @@
-package edu.stanford.bmir.protege.examples.view;
+package edu.stanford.bmir.protege.pattern.view;
 
 import java.awt.BorderLayout;
 import org.protege.editor.owl.ui.view.AbstractOWLViewComponent;

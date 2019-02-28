@@ -1,4 +1,4 @@
-package edu.stanford.bmir.protege.examples.view;
+package edu.stanford.bmir.protege.pattern.view;
 
 import java.util.Comparator;
 import java.util.Map;

@@ -3,12 +3,12 @@
    	<VSNode splits="0.5 0.5">
          <CNode>
             <Component label="Patten Coverage">
-                <Property id="pluginId" value="protege.plugin.examples.CoverageViewComponent"/>
+                <Property id="pluginId" value="protege.plugin.pattern.CoverageViewComponent"/>
             </Component>
         </CNode>
         <CNode>
             <Component label="Pattern Extraction">
-                <Property id="pluginId" value="protege.plugin.examples.ExtractionViewComponent"/>
+                <Property id="pluginId" value="protege.plugin.pattern.ExtractionViewComponent"/>
             </Component>
         </CNode>
     </VSNode>

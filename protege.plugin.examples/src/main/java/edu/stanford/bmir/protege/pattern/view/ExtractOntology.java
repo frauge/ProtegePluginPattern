@@ -1,4 +1,4 @@
-package edu.stanford.bmir.protege.examples.view;
+package edu.stanford.bmir.protege.pattern.view;
 
 import java.awt.Component;
 import java.awt.Dimension;
@@ -201,20 +201,20 @@ public class ExtractOntology extends JPanel {
         	}
         }
         
-        addaxiomtopanel("Number of Axioms checked: " + numberAxiomsChecked , true);
+        addAxiomToPanel("Number of Axioms checked: " + numberAxiomsChecked , true);
         MapComparator comp = new MapComparator(axiomtype_count);
         TreeMap<String,Integer> treeMap = new TreeMap<String,Integer>(comp);
         treeMap.putAll(axiomtype_count);
         
         for(Map.Entry<String,Integer> entry : treeMap.entrySet()) {
-        		addaxiomtopanel("Number of " + entry.getKey() + " Axioms: " + entry.getValue(),true);
+        	addAxiomToPanel("Number of " + entry.getKey() + " Axioms: " + entry.getValue(),true);
 	           Iterator<String> i = axiomtype_pattern.get(entry.getKey()).iterator();
 	           while (i.hasNext())
-	        	   addaxiomtopanel(i.next(),false); 
+	        	   addAxiomToPanel(i.next(),false); 
         }           
     }
     
-    private void addaxiomtopanel(String ax, boolean bold) {
+    private void addAxiomToPanel(String ax, boolean bold) {
     	JLabel textComponent = new JLabel();
     	Font font;
     	if (bold) {

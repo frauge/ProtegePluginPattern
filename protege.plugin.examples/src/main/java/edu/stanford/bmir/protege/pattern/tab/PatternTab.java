@@ -1,4 +1,4 @@
-package edu.stanford.bmir.protege.examples.tab;
+package edu.stanford.bmir.protege.pattern.tab;
 
 import org.protege.editor.owl.ui.OWLWorkspaceViewsTab;
 import org.slf4j.Logger;

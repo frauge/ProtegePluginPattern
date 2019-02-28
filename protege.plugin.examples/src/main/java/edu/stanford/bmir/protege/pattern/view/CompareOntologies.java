@@ -1,4 +1,4 @@
-package edu.stanford.bmir.protege.examples.view;
+package edu.stanford.bmir.protege.pattern.view;
 
 import java.awt.Component;
 import java.awt.Dimension;
@@ -113,7 +113,7 @@ public class CompareOntologies extends JPanel {
 
     private OWLModelManagerListener modelListener = event -> {
         if (event.getType() == EventType.ACTIVE_ONTOLOGY_CHANGED) {
-            firstcalculate();
+            firstCalculate();
         }
     };
     
@@ -151,7 +151,7 @@ public class CompareOntologies extends JPanel {
     	    };
     	        	
     	panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-    	firstcalculate(); 
+    	firstCalculate(); 
         JScrollPane rollPane = new JScrollPane(panel);
         rollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         rollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
@@ -172,7 +172,7 @@ public class CompareOntologies extends JPanel {
     }
     
     
-    private void firstcalculate() {
+    private void firstCalculate() {
     	panel.removeAll();
     	log.info("First coverage");
         for (OWLAxiom ax : modelManager.getActiveOntology().getAxioms()) {
@@ -190,7 +190,7 @@ public class CompareOntologies extends JPanel {
 	        	}
         	}
         } 
-        addaxiomtopanel("Pattern base loaded.",true);
+        addAxiomToPanel("Pattern base loaded.",true);
     }
     
     private void recalculate() {
@@ -240,26 +240,26 @@ public class CompareOntologies extends JPanel {
 	        			 if (first_entry) {
 	        				 first_entry = false;
 	        				 total_coverage = false;
-	        				 addaxiomtopanel("Following patterns are not covered:",true);
+	        				 addAxiomToPanel("Following patterns are not covered:",true);
 	        			 }
 	        			 if(first_axiom_entry) {
-	        				 addaxiomtopanel("Axiomtype " + mentry.getKey() +":", true);
+	        				 addAxiomToPanel("Axiomtype " + mentry.getKey() +":", true);
 	        				 first_axiom_entry = false;
 	        			 }
-	        			 addaxiomtopanel(current_entry,false);
+	        			 addAxiomToPanel(current_entry,false);
 	        		 }
         		 
         		 }else{
         			 if (first_entry) {
         				 first_entry = false;
         				 total_coverage = false;
-        				 addaxiomtopanel("Following patterns are not covered:",true);
+        				 addAxiomToPanel("Following patterns are not covered:",true);
         			 }
         			 if(first_axiom_entry) {
-        				 addaxiomtopanel("Axiomtype " + mentry.getKey() +":" ,true);
+        				 addAxiomToPanel("Axiomtype " + mentry.getKey() +":" ,true);
         				 first_axiom_entry = false;
         			 }
-        			 addaxiomtopanel(current_entry,false);
+        			 addAxiomToPanel(current_entry,false);
         		 }
         		 		 
         	 }
@@ -268,12 +268,12 @@ public class CompareOntologies extends JPanel {
         }
         
         if(total_coverage) {
-        	addaxiomtopanel("All patterns are covered.",true);
+        	addAxiomToPanel("All patterns are covered.",true);
         }
                   
     }
     
-    private void addaxiomtopanel(String ax, boolean bold) {
+    private void addAxiomToPanel(String ax, boolean bold) {
     	JLabel textComponent = new JLabel();
     	Font font;
     	if (bold) {

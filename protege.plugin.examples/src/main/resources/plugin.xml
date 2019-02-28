@@ -4,26 +4,26 @@
 <plugin>
 
 	<!-- Tabs -->
-	<extension id="ExampleWorkspaceTab" point="org.protege.editor.core.application.WorkspaceTab">
+	<extension id="PatternWorkspaceTab" point="org.protege.editor.core.application.WorkspaceTab">
 		<label value="Pattern Tab"/>
-		<class value="edu.stanford.bmir.protege.examples.tab.PatternTab"/>
+		<class value="edu.stanford.bmir.protege.pattern.tab.PatternTab"/>
 		<index value="Y"/>
 		<editorKitId value="OWLEditorKit"/>
-		<defaultViewConfigFileName value="viewconfig-exampletab.xml"/>
+		<defaultViewConfigFileName value="viewconfig-patterntab.xml"/>
    </extension>
 
 	<!-- View -->
 
 	<extension id="ExtractionViewComponent" point="org.protege.editor.core.application.ViewComponent">
 		<label value="Pattern Extraction" />
-		<class value="edu.stanford.bmir.protege.examples.view.ExtractionViewComponent" />
+		<class value="edu.stanford.bmir.protege.pattern.view.ExtractionViewComponent" />
 		<headerColor value="@org.protege.ontologycolor"/>
 		<category value="@org.protege.ontologycategory" />
 	</extension>
 	
 	<extension id="CoverageViewComponent" point="org.protege.editor.core.application.ViewComponent">
 		<label value="Pattern Coverage" />
-		<class value="edu.stanford.bmir.protege.examples.view.CoverageViewComponent" />
+		<class value="edu.stanford.bmir.protege.pattern.view.CoverageViewComponent" />
 		<headerColor value="@org.protege.ontologycolor"/>
 		<category value="@org.protege.ontologycategory" />
 	</extension>
