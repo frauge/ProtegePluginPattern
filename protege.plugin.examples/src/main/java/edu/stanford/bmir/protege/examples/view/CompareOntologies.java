@@ -312,7 +312,7 @@ public class CompareOntologies extends JPanel {
    }
        
    private String convert_opd(OWLObjectPropertyDomainAxiom opd) {
-       	String result = "⊤ ⊑ ∀" +  opd.getProperty().accept(pvisitor) + "." + opd.getDomain().accept(cvisitor);
+       	String result = "⊤ ⊑ ∀" +  opd.getProperty().accept(pvisitor) + ".(" + opd.getDomain().accept(cvisitor)+ ")";
         return checkaxiom(result);
    }
        
@@ -496,12 +496,12 @@ public class CompareOntologies extends JPanel {
 
 		@Override
 		public String visit(OWLObjectSomeValuesFrom ce) {
-			return "∃" + ce.getProperty().accept(pvisitor) + "." + ce.getFiller().accept(this);
+			return "∃" + ce.getProperty().accept(pvisitor) + ".(" + ce.getFiller().accept(this)+")";
 		}
 
 		@Override
 		public String visit(OWLObjectAllValuesFrom ce) {
-			return "∀" + ce.getProperty().accept(pvisitor) + "." + ce.getFiller().accept(this);
+			return "∀" + ce.getProperty().accept(pvisitor) + ".(" + ce.getFiller().accept(this)+")";
 		}
 
 		@Override
@@ -511,17 +511,17 @@ public class CompareOntologies extends JPanel {
 
 		@Override
 		public String visit(OWLObjectMinCardinality ce) {
-			return "≥number " + ce.getProperty().accept(pvisitor) + "." + ce.getFiller().accept(this);
+			return "≥number " + ce.getProperty().accept(pvisitor) + ".(" + ce.getFiller().accept(this)+")";
 		}
 
 		@Override
 		public String visit(OWLObjectExactCardinality ce) {
-			return "=number " + ce.getProperty().accept(pvisitor) + "." + ce.getFiller().accept(this);
+			return "=number " + ce.getProperty().accept(pvisitor) + ".(" + ce.getFiller().accept(this)+")";
 		}
 
 		@Override
 		public String visit(OWLObjectMaxCardinality ce) {
-			return "≤number " + ce.getProperty().accept(pvisitor) + "." + ce.getFiller().accept(this);
+			return "≤number " + ce.getProperty().accept(pvisitor) + ".(" + ce.getFiller().accept(this)+")";
 		}
 
 		@Override
@@ -545,12 +545,12 @@ public class CompareOntologies extends JPanel {
 
 		@Override
 		public String visit(OWLDataSomeValuesFrom ce) {
-			return "∃" + ce.getProperty().accept(pvisitor) + "." + ce.getFiller().accept(dvisitor);
+			return "∃" + ce.getProperty().accept(pvisitor) + ".(" + ce.getFiller().accept(dvisitor)+ ")";
 		}
 
 		@Override
 		public String visit(OWLDataAllValuesFrom ce) {
-			return "∀" + ce.getProperty().accept(pvisitor) + "." + ce.getFiller().accept(dvisitor);
+			return "∀" + ce.getProperty().accept(pvisitor) + ".(" + ce.getFiller().accept(dvisitor)+ ")";
 		}
 
 		@Override
@@ -560,17 +560,17 @@ public class CompareOntologies extends JPanel {
 
 		@Override
 		public String visit(OWLDataMinCardinality ce) {
-			return "≥number " + ce.getProperty().accept(pvisitor) + "." + ce.getFiller().accept(dvisitor);
+			return "≥number " + ce.getProperty().accept(pvisitor) + ".(" + ce.getFiller().accept(dvisitor)+ ")";
 		}
 
 		@Override
 		public String visit(OWLDataExactCardinality ce) {
-			return "=number "+ ce.getProperty().accept(pvisitor) + "." + ce.getFiller().accept(dvisitor);
+			return "=number "+ ce.getProperty().accept(pvisitor) + ".(" + ce.getFiller().accept(dvisitor)+ ")";
 		}
 
 		@Override
 		public String visit(OWLDataMaxCardinality ce) {
-			return "≤number "+ ce.getProperty().accept(pvisitor) + "." + ce.getFiller().accept(dvisitor);
+			return "≤number "+ ce.getProperty().accept(pvisitor) + ".(" + ce.getFiller().accept(dvisitor)+ ")";
 		}
     	
     }
